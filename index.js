@@ -14,7 +14,7 @@ app.use(bodyParser.json())
 //   res.send({message:`Hola ${req.params.name}! `})
 // })
 
-app.get('/api/product',(req,res) => {
+app.get('/api/product',(req,res)=>{
   // res.send(200,{products:products})
   Product.find({}, (err,products)=>{
     if(err) return res.status(500).send({message: `Error al realizar la petición : ${err}`})
@@ -22,7 +22,9 @@ app.get('/api/product',(req,res) => {
     res.status(200).send({products})
   })
 })
+
 app.get('/api/product/:productId',(req,res) => {
+  console.log(`el req es: ${req.params.productId}`);
   let productId = req.params.productId
 
   Product.findById(productId, (err,product) => {
@@ -53,10 +55,17 @@ app.post('/api/product',(req,res)=>{
     })
     })
 
-app.put('/api/product/productId',(req,res) =>{
-
-
+app.put('/api/product/:productId',(req,res) =>{
+  let productId=req.params.productId
+  let update = req.body
+  console.log('put1');
+  Product.findByIdAndUpdate(productId,update,(err,productUpdated)=>{
+    if(err) return res.status(500).send({message: `Error al actualizar el producto: ${err}`})
+    res.status(200).send({ product: productUpdated })
+  })
+  console.log('put2');
 })
+
 app.delete('/api/product/:productId',(req,res) =>{
   let productId=req.params.productId
   Product.findById(productId,(err,product)=>{
