@@ -15,11 +15,24 @@ app.use(bodyParser.json())
 // })
 
 app.get('/api/product',(req,res) => {
-  res.send(200,{products:[]})
-
+  // res.send(200,{products:products})
+  Product.find({}, (err,products)=>{
+    if(err) return res.status(500).send({message: `Error al realizar la petición : ${err}`})
+    if(!products) return res.status(404).send({message: `No existen porductos`})
+    res.status(200).send({products})
+  })
 })
 app.get('/api/product/:productId',(req,res) => {
+  let productId = req.params.productId
 
+  Product.findById(productId, (err,product) => {
+
+    if (err) return res.status(500).send({message: `Error al realizar la petizión : ${err}`})
+    if (!product)return res.status(404).send({message: `El producto no existe`})
+
+     res.status(200).send({prouct: product})
+    //res.status(200).send({product})
+    })
 
 })
 
@@ -37,16 +50,24 @@ app.post('/api/product',(req,res)=>{
     if (err) res.status(500).send({message: `Error al savar en la base de datos ${err}`})
 
     res.status(200).send({product: productStored})
-  })
+    })
     })
 
 app.put('/api/product/productId',(req,res) =>{
 
 
 })
-app.delete('/api/product/productId',(req,res) =>{
-
-
+app.delete('/api/product/:productId',(req,res) =>{
+  let productId=req.params.productId
+  Product.findById(productId,(err,product)=>{
+    if(err) res.status(500).send({message: `Error al borrar el producto: ${err}`})
+    //console.log('Intentado');
+    product.remove(err =>{
+      if(err) res.status(500).send({message: `Error al borrar el producto: ${err}`})
+      res.status(200).send({message: `El producto ha sido eliminado`})
+    })
+    //console.log('Intentado_2');
+  })
 })
 
 mongoose.connect('mongodb://localhost:27017/shop', (err, res)=> {
